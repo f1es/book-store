@@ -1,0 +1,9 @@
+﻿namespace BookStore.Contracts.Applications.Dto.Authors;
+
+public record AuthorResponseDto(
+    int Id,
+    string FirstName,
+    string LastName,
+    string Biography,
+    DateOnly Birthday,
+    string Nationality);

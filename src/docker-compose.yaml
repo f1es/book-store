@@ -1,0 +1,22 @@
+services:
+    book-store-mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        container_name: book-store-mssql 
+        ports:
+            - "1433:1433"
+        environment:
+            - ACCEPT_EULA=Y
+            - SA_PASSWORD=#8YourStrong@Password123!
+            - MSSQL_PID=Developer
+        volumes:
+            - book-store-mssql-data:/var/storages/book-store-mssql
+    
+    redis:
+        image: redis:8.4.0
+        container_name: redis
+        ports:
+            - "6379:6379"
+
+volumes:
+    book-store-mssql-data:
+        
