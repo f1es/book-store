@@ -19,6 +19,13 @@ public static class ServiceResultExtensions
             : ResolveError(serviceResult.ResultType!, serviceResult.Message!);
     }
 
+    public static IActionResult ToActionResult<TIn, TOut>(this ServiceResult<TIn> serviceResult, Func<TIn, TOut> mapper)
+    {
+        return serviceResult.IsSuccess
+            ? new OkObjectResult(mapper(serviceResult.Data!))
+            : ResolveError(serviceResult.ResultType!, serviceResult.Message!);
+    }
+
     private static IActionResult ResolveError(string resultType, string message)
     {
         var responseObject = new 

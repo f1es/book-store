@@ -30,6 +30,11 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where T
         _dbContext.Set<TEntity>().Remove(entity);
     }
 
+    public Task<int> DeleteByIdAsync(int id, CancellationToken ct = default)
+    {
+        return _dbContext.Set<TEntity>().Where(e => e.Id == id).ExecuteDeleteAsync(ct);
+    }
+
     public async Task<int> CountAsync(
         Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken ct = default)

@@ -1,5 +1,6 @@
-﻿using BookStore.API.Extensions;
-using BookStore.Contracts.Applications.Dto.Authors;
+﻿using BookStore.API.Dto.Authors;
+using BookStore.API.Extensions;
+using BookStore.API.Mappers;
 using BookStore.Contracts.Applications.Pagination;
 using BookStore.Contracts.Applications.Services;
 using BookStore.Contracts.Infrastructure.Database.Repositories.Models;
@@ -26,7 +27,7 @@ public class AuthorsController : ControllerBase
     {
         var result = await _authorsService.GetAsync(id, ct);
 
-        return result.ToActionResult();
+        return result.ToActionResult(a => a.ToResponse());
     }
 
     [HttpGet]
@@ -35,7 +36,7 @@ public class AuthorsController : ControllerBase
     {
         var authors = await _authorsService.GetCollectionAsync(pagination, ct);
 
-        return Ok(authors);
+        return Ok(authors.MapTo(a => a.ToResponse()));
     }
 
     [HttpPost]
@@ -43,9 +44,9 @@ public class AuthorsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateAuthor([FromBody] CreateAuthorRequestDto requestDto, CancellationToken ct)
     {
-        var result = await _authorsService.CreateAsync(requestDto, ct);
+        var result = await _authorsService.CreateAsync(requestDto.ToModel(), ct);
 
-        return result.ToActionResult();
+        return result.ToActionResult(a => a.ToResponse());
     }
 
     [HttpDelete("{id:int}")]
@@ -64,7 +65,7 @@ public class AuthorsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateAuthor([FromRoute] int id, [FromBody] CreateAuthorRequestDto requestDto, CancellationToken ct)
     {
-        var result = await _authorsService.UpdateAsync(id, requestDto, ct);
+        var result = await _authorsService.UpdateAsync(id, requestDto.ToModel(), ct);
 
         return result.ToActionResult();
     }

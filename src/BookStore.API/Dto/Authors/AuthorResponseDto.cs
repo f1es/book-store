@@ -1,6 +1,7 @@
-﻿namespace BookStore.Contracts.Applications.Dto.Authors;
+﻿namespace BookStore.API.Dto.Authors;
 
-public record CreateAuthorRequestDto(
+public record AuthorResponseDto(
+    int Id,
     string FirstName,
     string LastName,
     string Biography,

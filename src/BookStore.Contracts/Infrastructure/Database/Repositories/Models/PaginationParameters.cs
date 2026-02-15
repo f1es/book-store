@@ -2,25 +2,10 @@
 
 public class PaginationParameters
 {
-    private int _take;
-    private int _page;
+    public int Take { get; set; }
+    public int Page { get; set; }
 
     public const int DefaultPageSize = 250;
-
-    public int Take
-    {
-        get => _take; 
-        set => _take = value > 0 
-            ? value
-            : DefaultPageSize;
-    }
-    public int Page
-    {
-        get => _page;
-        set => _page = value > 0 
-            ? value 
-            : 1;
-    }
 
     public PaginationParameters()
     {

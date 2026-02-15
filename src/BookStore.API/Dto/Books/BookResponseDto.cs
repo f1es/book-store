@@ -1,4 +1,4 @@
-﻿namespace BookStore.Contracts.Applications.Dto.Books;
+﻿namespace BookStore.API.Dto.Books;
 
 public record BookResponseDto(
     int Id,

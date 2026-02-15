@@ -42,7 +42,7 @@ public class RedisCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "[RedisCacheService] Failed to process GetOrSetAsync");
+            _logger.LogWarning(ex, "Failed to process GetOrSetAsync");
 
             return await factory();
         }
