@@ -1,4 +1,4 @@
-﻿using BookStore.API.Dto.Books;
+﻿using BookStore.Contracts.Rest.Books;
 using BookStore.Domain.Models;
 
 namespace BookStore.API.Mappers;

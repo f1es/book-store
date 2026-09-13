@@ -1,6 +1,7 @@
-﻿namespace BookStore.API.Dto.Books;
+﻿namespace BookStore.Contracts.Rest.Books;
 
-public record CreateBookDto(
+public record BookDto(
+    int Id,
     string Title,
     string? Description,
     DateOnly PublicationDate,

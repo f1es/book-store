@@ -1,8 +1,8 @@
-﻿using BookStore.API.Dto.Books;
-using BookStore.API.Extensions;
+﻿using BookStore.API.Extensions;
 using BookStore.API.Mappers;
 using BookStore.Application.Abstractions.Database.Models;
 using BookStore.Contracts.Applications.Services;
+using BookStore.Contracts.Rest.Books;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStore.API.Controllers;

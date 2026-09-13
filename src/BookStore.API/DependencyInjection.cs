@@ -20,7 +20,7 @@ public static class DependencyInjection
 
     private static IServiceCollection ConfigureOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<DatabaseOptions>(configuration.GetSection("DatabaseOptions"));
+        services.Configure<DatabaseOptions>(configuration.GetSection(DatabaseOptions.Section));
 
         return services;
     }

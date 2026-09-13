@@ -10,9 +10,4 @@
     <ProjectReference Include="..\BookStore.Domain\BookStore.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Rest\Responses\" />
-    <Folder Include="Rest\Requests\" />
-  </ItemGroup>
-
 </Project>

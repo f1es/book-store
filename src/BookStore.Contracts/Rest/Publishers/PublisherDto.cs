@@ -1,4 +1,4 @@
-﻿namespace BookStore.API.Dto.Publishers;
+﻿namespace BookStore.Contracts.Rest.Publishers;
 
 public record PublisherDto(
     int Id,

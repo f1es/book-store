@@ -2,6 +2,7 @@
 using BookStore.Contracts.Infrastructure.Cache;
 using BookStore.Contracts.Infrastructure.Database;
 using BookStore.Infrastructure.Cache;
+using BookStore.Infrastructure.Cache.Options;
 using BookStore.Infrastructure.Database;
 using BookStore.Infrastructure.Database.Options;
 using BookStore.Infrastructure.Database.Repositories;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 
 namespace BookStore.Infrastructure;
 
@@ -18,7 +20,7 @@ public static class DependencyInjection
     {
         return services
             .ConfigureDatabase()
-            .ConfigureCache();
+            .ConfigureCache(configuration);
     }
 
     private static IServiceCollection ConfigureDatabase(this IServiceCollection services)
@@ -36,8 +38,13 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection ConfigureCache(this IServiceCollection services)
+    private static IServiceCollection ConfigureCache(this IServiceCollection services, IConfiguration configuration)
     {
+        var redisOptions = configuration.GetRequiredSection(RedisOptions.Section) as RedisOptions;
+
+        services.AddSingleton<IConnectionMultiplexer>(multiplexer => ConnectionMultiplexer.Connect(redisOptions!.Server));
+        services.AddScoped<ICacheService, RedisCacheService>();
+
         return services;
     }
 }
