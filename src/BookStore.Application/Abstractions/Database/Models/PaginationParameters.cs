@@ -19,5 +19,13 @@ public class PaginationParameters
         Page = page;
     }
 
-    public int Skip() => (Page - 1) * Take;
+    public int Skip()
+    {
+        return (Page - 1) * Take;
+    }
+
+    public bool IsDefaultPageSize()
+    {
+        return Take == DefaultPageSize;
+    }
 }

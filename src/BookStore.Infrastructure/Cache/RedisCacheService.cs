@@ -1,7 +1,6 @@
 ﻿using BookStore.Contracts.Infrastructure.Cache;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
-using System.Linq.Expressions;
 using System.Text.Json;
 
 namespace BookStore.Infrastructure.Cache;
@@ -42,29 +41,15 @@ public class RedisCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to process GetOrSetAsync");
+            _logger.LogWarning(ex, "Failed to cache {CacheKey} properly", key);
 
             return await factory();
         }
     }
 
-    public Task<ISet<TEntity>> GetOrSetHashSetAsync<TEntity>(
-        string key,
-        Func<Task<ICollection<TEntity>>> factory,
-        Expression<Func<TEntity, object>> hashSetKey,
-        TimeSpan? expiry = null)
+    public Task<bool> InvalidateKeyAsync(string key)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> InvalidateHashFieldAsync(string key, string fieldKey)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<bool> InvalidateKeyAsync(string key)
-    {
-        return await _database.KeyDeleteAsync(key);
+        return _database.KeyDeleteAsync(key);
     }
 
     private async Task<bool> SetAsJsonAsync(
