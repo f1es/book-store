@@ -1,4 +1,4 @@
-﻿namespace BookStore.Contracts.Rest.Authors;
+﻿namespace BookStore.Contracts.Rest.v1.Authors;
 
 public record AuthorDto(
     int Id,

@@ -40,12 +40,10 @@ public class PublishersService : IPublishersService
     public async Task<ServiceResult<Publisher>> GetAsync(int id, CancellationToken ct = default)
     {
         var publisher = await _unitOfWork.PublisherRepository.GetByIdAsync(id, ct: ct);
-        if (publisher is null)
-        {
-            return ServiceResult<Publisher>.Failure(ResultTypes.NotFound, $"Publisher not found");
-        }
 
-        return publisher;
+        return publisher is null
+            ? ServiceResult<Publisher>.Failure(ResultTypes.NotFound, $"Publisher not found")
+            : publisher;
     }
 
     public async Task<PagedCollection<Publisher>> GetCollectionAsync(PaginationParameters paginationParameters, CancellationToken ct = default)

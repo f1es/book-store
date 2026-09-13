@@ -2,15 +2,15 @@
 using BookStore.API.Mappers;
 using BookStore.Application.Abstractions.Database.Models;
 using BookStore.Contracts.Applications.Services;
-using BookStore.Contracts.Rest.Authors;
+using BookStore.Contracts.Rest.v1.Authors;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BookStore.API.Controllers;
+namespace BookStore.API.Controllers.v1;
 
 [ApiController]
 [Route("api/v1/authors")]
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-public class AuthorsController : ControllerBase
+public sealed class AuthorsController : ControllerBase
 {
     private readonly IAuthorsService _authorsService;
 

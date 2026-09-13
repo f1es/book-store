@@ -10,6 +10,7 @@ public record ServiceResult(
     public bool IsFailure => IsSuccess is false;
     public static ServiceResult Success() => new ServiceResult(true, null, null);
     public static ServiceResult Failure(string resultType, string message) => new ServiceResult(false, resultType, message);
+    public static ServiceResult NotFound(string message) => new ServiceResult(false, ResultTypes.NotFound, message);
 }
 
 public record ServiceResult<T>(
@@ -21,6 +22,7 @@ public record ServiceResult<T>(
     public bool IsFailure => IsSuccess is false;
     public static ServiceResult<T> Success(T data) => new ServiceResult<T>(true, null, null, data);
     public static ServiceResult<T> Failure(string resultType, string message) => new ServiceResult<T>(false, resultType, message, default);
+    public static ServiceResult<T> NotFound(string message) => new ServiceResult<T>(false, ResultTypes.NotFound, message, default);
 
     public static implicit operator ServiceResult<T>(T data) => new ServiceResult<T>(true, null, null, data);
 }

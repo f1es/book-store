@@ -1,4 +1,4 @@
-﻿namespace BookStore.Contracts.Rest.Publishers;
+﻿namespace BookStore.Contracts.Rest.v1.Publishers;
 
 public record CreatePublisherDto(
     string Name,

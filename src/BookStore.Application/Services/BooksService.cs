@@ -25,7 +25,7 @@ public class BooksService : IBooksService
         var book = await _unitOfWork.BookRepository.GetByIdAsync(id, ct: ct);
 
         return book is null
-            ? ServiceResult<Book>.Failure(ResultTypes.NotFound, $"Book not found")
+            ? ServiceResult<Book>.NotFound("Book not found")
             : ServiceResult<Book>.Success(book);
     }
 
@@ -39,13 +39,13 @@ public class BooksService : IBooksService
         var hasNoAuthor = await _unitOfWork.AuthorRepository.NoOneAsync(book.AuthorId, ct: ct);
         if (hasNoAuthor)
         {
-            return ServiceResult<Book>.Failure(ResultTypes.NotFound, $"Author of book not found");
+            return ServiceResult<Book>.NotFound("Author not found");
         }
 
         var hasNoPublisher = await _unitOfWork.PublisherRepository.NoOneAsync(book.PublisherId, ct: ct);
         if (hasNoPublisher)
         {
-            return ServiceResult<Book>.Failure(ResultTypes.NotFound, $"Publisher not found");
+            return ServiceResult<Book>.NotFound("Publisher not found");
         }
 
         _unitOfWork.BookRepository.Add(book);
@@ -59,7 +59,7 @@ public class BooksService : IBooksService
         var affectedRows = await _bulkRepository.BulkDeleteAsync(b => b.Id == id, ct: ct);
 
         return affectedRows == 0
-            ? ServiceResult.Failure(ResultTypes.NotFound, $"Book not found")
+            ? ServiceResult.NotFound("Book not found")
             : ServiceResult.Success();
     }
 
@@ -68,19 +68,19 @@ public class BooksService : IBooksService
         var hasNoAuthor = await _unitOfWork.AuthorRepository.NoOneAsync(book.AuthorId, ct: ct);
         if (hasNoAuthor)
         {
-            return ServiceResult.Failure(ResultTypes.NotFound, $"Author of book not found");
+            return ServiceResult.NotFound("Author not found");
         }
 
         var hasNoPublisher = await _unitOfWork.PublisherRepository.NoOneAsync(book.PublisherId, ct: ct);
         if (hasNoPublisher)
         {
-            return ServiceResult.Failure(ResultTypes.NotFound, $"Publisher of book not found");
+            return ServiceResult.NotFound("Publisher not found");
         }
 
         var existingBook = await _unitOfWork.BookRepository.GetByIdAsync(id, trackChanges: true, ct: ct);
         if (existingBook is null)
         {
-            return ServiceResult.Failure(ResultTypes.NotFound, $"Book not found");
+            return ServiceResult.NotFound("Book not found");
         }
 
         existingBook.Update(book);
