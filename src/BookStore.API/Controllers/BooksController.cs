@@ -1,9 +1,8 @@
 ﻿using BookStore.API.Dto.Books;
 using BookStore.API.Extensions;
 using BookStore.API.Mappers;
-using BookStore.Contracts.Applications.Pagination;
+using BookStore.Application.Abstractions.Database.Models;
 using BookStore.Contracts.Applications.Services;
-using BookStore.Contracts.Infrastructure.Database.Repositories.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStore.API.Controllers;
@@ -21,7 +20,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(BookResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BookDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetBook([FromRoute] int id, CancellationToken ct)
     {
@@ -31,7 +30,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(PagedCollection<BookResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedCollection<BookDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBooks([FromQuery] PaginationParameters pagination, CancellationToken ct)
     {
         var books = await _booksService.GetCollectionAsync(pagination, ct);
@@ -40,9 +39,9 @@ public class BooksController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(BookResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BookDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateBook([FromBody] CreateBookRequestDto requestDto, CancellationToken ct)
+    public async Task<IActionResult> CreateBook([FromBody] CreateBookDto requestDto, CancellationToken ct)
     {
         var result = await _booksService.CreateAsync(requestDto.ToModel(), ct);
 
@@ -63,7 +62,7 @@ public class BooksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateBook([FromRoute] int id, [FromBody] CreateBookRequestDto requestDto, CancellationToken ct)
+    public async Task<IActionResult> UpdateBook([FromRoute] int id, [FromBody] CreateBookDto requestDto, CancellationToken ct)
     {
         var result = await _booksService.UpdateAsync(id, requestDto.ToModel(), ct);
 

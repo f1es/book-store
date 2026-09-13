@@ -1,4 +1,4 @@
-﻿using BookStore.Contracts.Infrastructure.Database.Repositories;
+﻿using BookStore.Application.Abstractions.Database.Repositories;
 using BookStore.Domain.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;

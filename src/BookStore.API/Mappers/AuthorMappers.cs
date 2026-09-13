@@ -5,8 +5,9 @@ namespace BookStore.API.Mappers;
 
 public static class AuthorMappers
 {
-    public static Author ToModel(this CreateAuthorRequestDto requestDto) =>
-        new Author
+    public static Author ToModel(this CreateAuthorDto requestDto)
+    {
+        return new Author
         {
             FirstName = requestDto.FirstName,
             LastName = requestDto.LastName,
@@ -14,9 +15,11 @@ public static class AuthorMappers
             Birthday = requestDto.Birthday,
             Nationality = requestDto.Nationality,
         };
+    }
 
-    public static AuthorResponseDto ToResponse(this Author author) => 
-        new AuthorResponseDto(
+    public static AuthorDto ToResponse(this Author author)
+    {
+        return new AuthorDto(
             author.Id,
             author.FirstName,
             author.LastName,
@@ -24,7 +27,5 @@ public static class AuthorMappers
             author.Birthday,
             author.Nationality
         );
-
-    public static ICollection<AuthorResponseDto> ToResponse(this ICollection<Author> authors) =>
-        authors.Select(ToResponse).ToList();
+    }
 }

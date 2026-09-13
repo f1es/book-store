@@ -1,5 +1,7 @@
-﻿using BookStore.Contracts.Infrastructure.Database;
-using BookStore.Contracts.Infrastructure.Database.Repositories;
+﻿using BookStore.Application.Abstractions.Database.Repositories;
+using BookStore.Contracts.Infrastructure.Cache;
+using BookStore.Contracts.Infrastructure.Database;
+using BookStore.Infrastructure.Cache;
 using BookStore.Infrastructure.Database;
 using BookStore.Infrastructure.Database.Options;
 using BookStore.Infrastructure.Database.Repositories;
@@ -15,7 +17,8 @@ public static class DependencyInjection
     public static IServiceCollection ConfigureInfrastructureLayer(this IServiceCollection services, IConfiguration configuration)
     {
         return services
-            .ConfigureDatabase();
+            .ConfigureDatabase()
+            .ConfigureCache();
     }
 
     private static IServiceCollection ConfigureDatabase(this IServiceCollection services)
@@ -30,6 +33,11 @@ public static class DependencyInjection
 
         services.AddScoped(typeof(IBulkRepository<>), typeof(BulkRepository<>));
 
+        return services;
+    }
+
+    private static IServiceCollection ConfigureCache(this IServiceCollection services)
+    {
         return services;
     }
 }

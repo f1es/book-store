@@ -1,10 +1,8 @@
-﻿using BookStore.Application.Mappers;
-using BookStore.Contracts.Applications.Pagination;
-using BookStore.Contracts.Applications.Results;
+﻿using BookStore.Application.Abstractions.Database.Models;
+using BookStore.Application.Abstractions.Database.Repositories;
+using BookStore.Application.Results;
 using BookStore.Contracts.Applications.Services;
 using BookStore.Contracts.Infrastructure.Database;
-using BookStore.Contracts.Infrastructure.Database.Repositories;
-using BookStore.Contracts.Infrastructure.Database.Repositories.Models;
 using BookStore.Domain.Models;
 
 namespace BookStore.Application.Services;
@@ -27,19 +25,29 @@ public class BooksService : IBooksService
         var book = await _unitOfWork.BookRepository.GetByIdAsync(id, ct: ct);
 
         return book is null
-            ? ServiceResult<Book>.Failure(ResultTypes.NotFound, $"Book with id {id} not found")
-            : book;
+            ? ServiceResult<Book>.Failure(ResultTypes.NotFound, $"Book not found")
+            : ServiceResult<Book>.Success(book);
     }
 
     public async Task<PagedCollection<Book>> GetCollectionAsync(PaginationParameters paginationParameters, CancellationToken ct = default)
     {
-        var books = await _unitOfWork.BookRepository.GetCollectionAndCountAsync(paginationParameters, ct: ct);
-
-        return books.Data.ToPagedCollection(books.Count, paginationParameters);
+        return await _unitOfWork.BookRepository.GetPagedCollectionAsync(paginationParameters, ct: ct);
     }
 
     public async Task<ServiceResult<Book>> CreateAsync(Book book, CancellationToken ct = default)
     {
+        var hasNoAuthor = await _unitOfWork.AuthorRepository.NoOneAsync(book.AuthorId, ct: ct);
+        if (hasNoAuthor)
+        {
+            return ServiceResult<Book>.Failure(ResultTypes.NotFound, $"Author of book not found");
+        }
+
+        var hasNoPublisher = await _unitOfWork.PublisherRepository.NoOneAsync(book.PublisherId, ct: ct);
+        if (hasNoPublisher)
+        {
+            return ServiceResult<Book>.Failure(ResultTypes.NotFound, $"Publisher not found");
+        }
+
         _unitOfWork.BookRepository.Add(book);
         await _unitOfWork.SaveChangesAsync(ct);
 
@@ -50,18 +58,29 @@ public class BooksService : IBooksService
     {
         var affectedRows = await _bulkRepository.BulkDeleteAsync(b => b.Id == id, ct: ct);
 
-        return affectedRows == 0 
-            ? ServiceResult.Failure(ResultTypes.NotFound, $"Book with id {id} not found")
+        return affectedRows == 0
+            ? ServiceResult.Failure(ResultTypes.NotFound, $"Book not found")
             : ServiceResult.Success();
     }
 
     public async Task<ServiceResult> UpdateAsync(int id, Book book, CancellationToken ct = default)
     {
-        var existingBook = await _unitOfWork.BookRepository.GetByIdAsync(id, trackChanges: true, ct: ct);
+        var hasNoAuthor = await _unitOfWork.AuthorRepository.NoOneAsync(book.AuthorId, ct: ct);
+        if (hasNoAuthor)
+        {
+            return ServiceResult.Failure(ResultTypes.NotFound, $"Author of book not found");
+        }
 
+        var hasNoPublisher = await _unitOfWork.PublisherRepository.NoOneAsync(book.PublisherId, ct: ct);
+        if (hasNoPublisher)
+        {
+            return ServiceResult.Failure(ResultTypes.NotFound, $"Publisher of book not found");
+        }
+
+        var existingBook = await _unitOfWork.BookRepository.GetByIdAsync(id, trackChanges: true, ct: ct);
         if (existingBook is null)
         {
-            return ServiceResult.Failure(ResultTypes.NotFound, $"Book with id {id} not found");
+            return ServiceResult.Failure(ResultTypes.NotFound, $"Book not found");
         }
 
         existingBook.Update(book);

@@ -10,4 +10,11 @@ public sealed class Publisher : IEntity
     public string? Website { get; set; } = default!;
 
     public ICollection<Book> Books { get; set; } = new List<Book>();
+
+    public void Update(Publisher publisher)
+    {
+        Name = publisher.Name;
+        Address = publisher.Address;
+        Website = publisher.Website;
+    }
 }

@@ -1,9 +1,8 @@
 ﻿using BookStore.API.Dto.Authors;
 using BookStore.API.Extensions;
 using BookStore.API.Mappers;
-using BookStore.Contracts.Applications.Pagination;
+using BookStore.Application.Abstractions.Database.Models;
 using BookStore.Contracts.Applications.Services;
-using BookStore.Contracts.Infrastructure.Database.Repositories.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStore.API.Controllers;
@@ -21,7 +20,7 @@ public class AuthorsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthorResponseDto))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthorDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAuthor([FromRoute] int id, CancellationToken ct)
     {
@@ -31,7 +30,7 @@ public class AuthorsController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedCollection<AuthorResponseDto>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedCollection<AuthorDto>))]
     public async Task<IActionResult> GetAuthors([FromQuery] PaginationParameters pagination, CancellationToken ct)
     {
         var authors = await _authorsService.GetCollectionAsync(pagination, ct);
@@ -40,9 +39,9 @@ public class AuthorsController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthorResponseDto))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthorDto))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateAuthor([FromBody] CreateAuthorRequestDto requestDto, CancellationToken ct)
+    public async Task<IActionResult> CreateAuthor([FromBody] CreateAuthorDto requestDto, CancellationToken ct)
     {
         var result = await _authorsService.CreateAsync(requestDto.ToModel(), ct);
 
@@ -63,7 +62,7 @@ public class AuthorsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateAuthor([FromRoute] int id, [FromBody] CreateAuthorRequestDto requestDto, CancellationToken ct)
+    public async Task<IActionResult> UpdateAuthor([FromRoute] int id, [FromBody] CreateAuthorDto requestDto, CancellationToken ct)
     {
         var result = await _authorsService.UpdateAsync(id, requestDto.ToModel(), ct);
 

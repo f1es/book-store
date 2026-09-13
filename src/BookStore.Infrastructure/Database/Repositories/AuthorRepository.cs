@@ -1,4 +1,4 @@
-﻿using BookStore.Contracts.Infrastructure.Database.Repositories;
+﻿using BookStore.Application.Abstractions.Database.Repositories;
 using BookStore.Domain.Models;
 
 namespace BookStore.Infrastructure.Database.Repositories;

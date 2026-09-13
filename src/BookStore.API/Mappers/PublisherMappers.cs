@@ -5,7 +5,7 @@ namespace BookStore.API.Mappers;
 
 public static class PublisherMappers
 {
-    public static Publisher ToModel(this CreatePublisherRequestDto requestDto) =>
+    public static Publisher ToModel(this CreatePublisherDto requestDto) =>
         new Publisher()
         {
             Name = requestDto.Name,
@@ -13,20 +13,10 @@ public static class PublisherMappers
             Website = requestDto.Website,
         };
 
-    public static PublisherResponseDto ToResponse(this Publisher publisher) =>
-        new PublisherResponseDto(
+    public static PublisherDto ToResponse(this Publisher publisher) =>
+        new PublisherDto(
             publisher.Id,
             publisher.Name,
             publisher.Address,
             publisher.Website);
-
-    public static ICollection<PublisherResponseDto> ToResponse(this ICollection<Publisher> publishers) => 
-        publishers.Select(ToResponse).ToList();
-
-    public static void Update(this Publisher publisher, CreatePublisherRequestDto requestDto)
-    {
-        publisher.Name = requestDto.Name;
-        publisher.Address = requestDto.Address;
-        publisher.Website = requestDto.Website;
-    }
 }

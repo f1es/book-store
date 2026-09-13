@@ -1,5 +1,5 @@
-﻿using BookStore.Contracts.Infrastructure.Database.Repositories;
-using BookStore.Contracts.Infrastructure.Database.Repositories.Models;
+﻿using BookStore.Application.Abstractions.Database.Models;
+using BookStore.Application.Abstractions.Database.Repositories;
 using BookStore.Domain.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -30,25 +30,6 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where T
         _dbContext.Set<TEntity>().Remove(entity);
     }
 
-    public Task<int> DeleteByIdAsync(int id, CancellationToken ct = default)
-    {
-        return _dbContext.Set<TEntity>().Where(e => e.Id == id).ExecuteDeleteAsync(ct);
-    }
-
-    public async Task<int> CountAsync(
-        Expression<Func<TEntity, bool>>? predicate = null,
-        CancellationToken ct = default)
-    {
-        var query = _dbContext.Set<TEntity>().AsQueryable<TEntity>();
-
-        if (predicate is not null)
-        {
-            query = query.Where(predicate);
-        }
-
-        return await query.CountAsync(ct);
-    }
-
     public async Task<TEntity?> GetByIdAsync(
         int id, 
         bool trackChanges = false, 
@@ -73,7 +54,6 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where T
 
     public async Task<ICollection<TEntity>> GetByPredicateAsync(
         Expression<Func<TEntity, bool>> predicate,
-        PaginationParameters? paginationParameters = null,
         OrderingParameters<TEntity>? orderingParameters = null,
         Expression<Func<TEntity, object>>[]? includes = null,
         CancellationToken ct = default)
@@ -100,30 +80,22 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where T
                 .OrderBy(e => e.Id);
         }
 
-        if (paginationParameters is not null)
-        {
-            query = query
-                .Skip(paginationParameters.Skip())
-                .Take(paginationParameters.Take);
-        }
-
         return await query
             .AsNoTracking()
             .ToListAsync(ct);
     }
 
-    public async Task<ICollection<TEntity>> GetCollectionAsync(
-        PaginationParameters? paginationParameters = null,
+    public Task<ICollection<TEntity>> GetCollectionAsync(
         OrderingParameters<TEntity>? orderingParameters = null,
         Expression<Func<TEntity, object>>[]? includes = null,
         CancellationToken ct = default)
     {
-        return await GetByPredicateAsync(e => true, paginationParameters, orderingParameters, includes, ct);
+        return GetByPredicateAsync(e => true, orderingParameters, includes, ct);
     }
 
-    public async Task<(ICollection<TEntity> Data, int Count)> GetByPredicateAndCountAsync(
+    public async Task<PagedCollection<TEntity>> GetPagedCollectionByPredicateAsync(
         Expression<Func<TEntity, bool>> predicate,
-        PaginationParameters? paginationParameters = null,
+        PaginationParameters paginationParameters,
         OrderingParameters<TEntity>? orderingParameters = null,
         Expression<Func<TEntity, object>>[]? includes = null,
         CancellationToken ct = default)
@@ -133,22 +105,48 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where T
             .Where(predicate)
             .CountAsync(ct);
 
-        var data = await GetByPredicateAsync(
-            predicate, 
-            paginationParameters, 
-            orderingParameters, 
-            includes,
-            ct);
+        var query = _dbContext.Set<TEntity>().AsQueryable();
 
-        return (data, count);
+        if (includes is not null)
+        {
+            query = includes.Aggregate(query, (current, include) =>
+                current.Include(include));
+        }
+
+        query = query.Where(predicate);
+
+        if (orderingParameters is not null)
+        {
+            query = orderingParameters.Order == Order.Ascending
+                ? query.OrderBy(orderingParameters.OrderingProperty)
+                : query.OrderByDescending(orderingParameters.OrderingProperty);
+        }
+        else
+        {
+            query = query
+                .OrderBy(e => e.Id);
+        }
+
+        var data = await query
+            .Skip(paginationParameters.Skip())
+            .Take(paginationParameters.Take)
+            .AsNoTracking()
+            .ToListAsync(ct);
+
+        return new PagedCollection<TEntity>(data, count, paginationParameters);
     }
 
-    public async Task<(ICollection<TEntity> Data, int Count)> GetCollectionAndCountAsync(
-        PaginationParameters? paginationParameters = null,
+    public Task<PagedCollection<TEntity>> GetPagedCollectionAsync(
+        PaginationParameters paginationParameters,
         OrderingParameters<TEntity>? orderingParameters = null,
         Expression<Func<TEntity, object>>[]? includes = null,
         CancellationToken ct = default)
     {
-        return await GetByPredicateAndCountAsync(e => true, paginationParameters, orderingParameters, includes, ct);
+        return GetPagedCollectionByPredicateAsync(e => true, paginationParameters, orderingParameters, includes, ct);
+    }
+
+    public async Task<bool> NoOneAsync(int id, CancellationToken ct = default)
+    {
+        return !await _dbContext.Set<TEntity>().AnyAsync(e => e.Id == id, ct);
     }
 }

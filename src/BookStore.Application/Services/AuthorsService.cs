@@ -1,10 +1,8 @@
-﻿using BookStore.Application.Mappers;
-using BookStore.Contracts.Applications.Pagination;
-using BookStore.Contracts.Applications.Results;
+﻿using BookStore.Application.Abstractions.Database.Models;
+using BookStore.Application.Abstractions.Database.Repositories;
+using BookStore.Application.Results;
 using BookStore.Contracts.Applications.Services;
 using BookStore.Contracts.Infrastructure.Database;
-using BookStore.Contracts.Infrastructure.Database.Repositories;
-using BookStore.Contracts.Infrastructure.Database.Repositories.Models;
 using BookStore.Domain.Models;
 
 namespace BookStore.Application.Services;
@@ -35,7 +33,7 @@ public class AuthorsService : IAuthorsService
         var affectedRows = await _bulkRepository.BulkDeleteAsync(a => a.Id == id, ct: ct);
 
         return affectedRows == 0
-            ? ServiceResult.Failure(ResultTypes.NotFound, $"Author with id {id} not found")
+            ? ServiceResult.Failure(ResultTypes.NotFound, $"Author not found")
             : ServiceResult.Success();
     }
 
@@ -44,24 +42,23 @@ public class AuthorsService : IAuthorsService
         var author = await _unitOfWork.AuthorRepository.GetByIdAsync(id, ct: ct);
 
         return author is null
-            ? ServiceResult<Author>.Failure(ResultTypes.NotFound, $"Author with id {id} not found")
+            ? ServiceResult<Author>.Failure(ResultTypes.NotFound, $"Author not found")
             : author;
     }
 
     public async Task<PagedCollection<Author>> GetCollectionAsync(PaginationParameters paginationParameters, CancellationToken ct = default)
     {
-        var authors = await _unitOfWork.AuthorRepository.GetCollectionAndCountAsync(paginationParameters, ct: ct);
+        var authors = await _unitOfWork.AuthorRepository.GetPagedCollectionAsync(paginationParameters, ct: ct);
 
-        return authors.Data.ToPagedCollection(authors.Count, paginationParameters);  
+        return authors;  
     }
 
     public async Task<ServiceResult> UpdateAsync(int id, Author author, CancellationToken ct = default)
     {
         var existingAuthor = await _unitOfWork.AuthorRepository.GetByIdAsync(id, trackChanges: true, ct: ct);
-
         if (existingAuthor is null)
         {
-            return ServiceResult.Failure(ResultTypes.NotFound, $"Author with id {id} not found");
+            return ServiceResult.Failure(ResultTypes.NotFound, $"Author not found");
         }
 
         existingAuthor.Update(author);

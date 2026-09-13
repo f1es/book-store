@@ -14,4 +14,14 @@ public sealed class Book : IEntity
 
     public Author Author { get; set; } = default!;
     public Publisher Publisher { get; set; } = default!;
+
+    public void Update(Book book)
+    {
+        Title = book.Title;
+        Description = book.Description;
+        PublicationDate = book.PublicationDate;
+        Price = book.Price;
+        AuthorId = book.AuthorId;
+        PublisherId = book.PublisherId;
+    }
 }

@@ -1,4 +1,4 @@
-﻿using BookStore.Contracts.Applications.Results;
+﻿using BookStore.Application.Results;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStore.API.Extensions;

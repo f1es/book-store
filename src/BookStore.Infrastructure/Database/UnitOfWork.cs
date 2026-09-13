@@ -1,5 +1,5 @@
-﻿using BookStore.Contracts.Infrastructure.Database;
-using BookStore.Contracts.Infrastructure.Database.Repositories;
+﻿using BookStore.Application.Abstractions.Database.Repositories;
+using BookStore.Contracts.Infrastructure.Database;
 using BookStore.Infrastructure.Database.Repositories;
 
 namespace BookStore.Infrastructure.Database;

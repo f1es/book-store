@@ -12,4 +12,13 @@ public sealed class Author : IEntity
     public string Nationality { get; set; } = default!;
 
     public ICollection<Book> Books { get; set; } = new List<Book>();
+
+    public void Update(Author author)
+    {
+        FirstName = author.FirstName;
+        LastName = author.LastName;
+        Biography = author.Biography;
+        Birthday = author.Birthday;
+        Nationality = author.Nationality;
+    }
 }
